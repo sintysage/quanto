@@ -4,7 +4,7 @@ project:
 
 author: Sinty Sage
 website:
-  site-url: "https://sinty-database.serveblog.net/quanto-site/"
+  site-url: "${SITE_URL}"
   search:
     location: navbar
     type: overlay
