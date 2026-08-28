@@ -10,6 +10,16 @@ website:
   title: "Quanto"
   navbar:
     background: "#212121"
+    href: index.qmd
+    left:
+      - text: "Home"
+        href: index.qmd
+
+    tools:
+      - icon: github
+        menu:
+          - text: Source Code
+            href: https://github.com/sintysage/quanto
 format:
   html:
     css: styles.css
