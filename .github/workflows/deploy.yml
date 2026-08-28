@@ -36,7 +36,6 @@ jobs:
         run: pixi run render_site
         env:
           PIXI_HOME: $HOME/.pixi
-          SITE_URL: ${{ secrets.SITE_URL }}
 
       - name: Deploy to S3
         run: |
