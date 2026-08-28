@@ -4,6 +4,7 @@ description: >-
   Visualizing the Finite Population Correction factor and its impact on standard
   error when sampling without replacement.
 categories: [Tutorial, Stats]
+jupyter: main
 ---
 
 ```{python}

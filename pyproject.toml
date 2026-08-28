@@ -21,6 +21,7 @@ registe_kernel = "python -m ipykernel install --user --name main --display-name 
 
 [tool.pixi.feature.quarto.tasks]
 preview_site = "quarto preview"
+render_site = "quarto render"
 
 [tool.pixi.tasks]
 

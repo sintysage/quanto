@@ -10,7 +10,6 @@ website:
   title: "Quanto"
   navbar:
     background: "#212121"
-jupyter: main
 format:
   html:
     css: styles.css
@@ -30,3 +29,6 @@ format:
       hypothesis: true
 
   ipynb: default
+
+engine: jupyter
+jupyter: main
