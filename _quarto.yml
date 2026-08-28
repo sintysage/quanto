@@ -1,6 +1,6 @@
 project:
   type: website
-  output-dir: reports
+  output-dir: site
 
 author: Sinty Sage
 website:
@@ -39,3 +39,5 @@ format:
 
 engine: jupyter
 jupyter: main
+execute:
+  freeze: auto

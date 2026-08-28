@@ -1,8 +1,9 @@
 .git
 _site
 .env
+_freeze
+site
 **/*.png
-reports
 
 /.quarto/
 **/*.quarto_ipynb

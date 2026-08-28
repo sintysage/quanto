@@ -42,7 +42,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "./reports" # CHANGE THIS to match your project build folder (e.g., ./build, ./.next)
+          path: "./site" # CHANGE THIS to match your project build folder (e.g., ./build, ./.next)
 
       - name: Deploy to GitHub Pages
         id: deployment

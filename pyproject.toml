@@ -32,7 +32,7 @@ default = { solve-group = "default" }
 main = { features = ["main"], solve-group = "default" }
 test = { features = ["test"], solve-group = "default" }
 ml = { features = ["ml"], solve-group = "default" }
-quarto = { features = ["quarto"], solve-group = "default" }
+quarto = { features = ["quarto", "versioning"], solve-group = "default" } 
 
 [tool.pixi.feature.main.dependencies]
 polars = ">=1.44.1,<2"
@@ -49,6 +49,9 @@ xgboost = ">=3.4.1,<4"
 lightgbm = ">=4.7.0,<5"
 scikit-learn = ">=1.9.0,<2"
 ipykernel = ">=7.3.0,<8"
+
+[tool.pixi.feature.versioning.dependencies]
+dvc = ">=3.67.1,<4"
 
 [tool.pixi.feature.quarto.dependencies]
 quarto = ">=1.9.38,<2"
