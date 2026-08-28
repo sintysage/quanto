@@ -40,7 +40,7 @@ jobs:
       - name: Deploy to S3
         run: |
           aws s3 sync reports/ s3://quanto-site/ \
-            --endpoint-url "$AWS_S3_ENDPOINT_URL" \
+            --endpoint-url "https://sinty-database.serveblog.net" \
             --delete \
             --cache-control "max-age=31536000,public"
         env:
