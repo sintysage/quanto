@@ -11,7 +11,8 @@ website:
   title: "Quanto"
   navbar:
     background: "#212121"
-    href: index.html
+    href: /index.html
+    logo-href: /index.html
     left:
       - text: "Home"
         href: index.html
