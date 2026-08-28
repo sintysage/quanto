@@ -39,18 +39,6 @@ jobs:
         env:
           PIXI_HOME: $HOME/.pixi
 
-      - name: Deploy to S3
-        run: |
-          aws s3 sync reports/ s3://quanto-site/ \
-            --endpoint-url "$AWS_S3_ENDPOINT_URL" \
-            --delete \
-            --cache-control "max-age=31536000,public"
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: us-east-1
-          AWS_S3_ENDPOINT_URL: ${{ secrets.AWS_S3_ENDPOINT_URL }}
-
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:

@@ -4,18 +4,12 @@ project:
 
 author: Sinty Sage
 website:
-  site-url: "https://sinty-database.serveblog.net/quanto-site/"
   search:
     location: navbar
     type: overlay
   title: "Quanto"
   navbar:
     background: "#212121"
-    href: /index.html
-    logo-href: /index.html
-    left:
-      - text: "Home"
-        href: index.html
 
     tools:
       - icon: github
