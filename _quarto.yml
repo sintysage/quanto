@@ -10,10 +10,10 @@ website:
   title: "Quanto"
   navbar:
     background: "#212121"
-    href: index.qmd
+    href: index.html
     left:
       - text: "Home"
-        href: index.qmd
+        href: index.html
 
     tools:
       - icon: github
