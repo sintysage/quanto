@@ -1,0 +1,60 @@
+---
+title: "Normal Approximation"
+description: >-
+  This is a statistical tutorial demonstrating when the normal distribution can
+  approximate a binomial distribution.
+categories: [Tutorial, Stats, Distribution]
+jupyter: main
+---
+
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.stats import binom, hypergeom, norm
+
+import sys
+print(sys.executable)
+print(sys.version)
+```
+
+```{python}
+def compare_normal_approx(n, p, title):
+    """Compare binomial distribution with its normal approximation."""
+    mu = n * p
+    sigma = np.sqrt(n * p * (1 - p))
+
+    # Exact binomial PMF
+    k = np.arange(0, n + 1)
+    pmf = binom.pmf(k, n, p)
+
+    # Normal approximation (with continuity correction for the demo below)
+    x = np.linspace(max(0, mu - 4*sigma), mu + 4*sigma, 500)
+    pdf = norm.pdf(x, mu, sigma)
+
+    # Plot
+    plt.figure(figsize=(8, 4))
+    plt.bar(k, pmf, alpha=0.6, label=f"Binomial(n={n}, p={p})")
+    plt.plot(x, pdf, "r-", lw=2, label=f"Normal(μ={mu:.1f}, σ={sigma:.2f})")
+    plt.title(title)
+    plt.xlabel("k")
+    plt.ylabel("Probability")
+    plt.legend()
+    plt.tight_layout()
+
+    # Numeric check: P(X <= some value), exact vs normal approx
+    k0 = int(mu)  # P(X <= np)
+    exact = binom.cdf(k0, n, p)
+    approx_no_cc = norm.cdf(k0, mu, sigma)
+    approx_cc = norm.cdf(k0 + 0.5, mu, sigma)  # continuity correction
+
+# Case 1: np < 5  -> approximation is POOR
+compare_normal_approx(20, 0.1, "Case 1: np = 2 < 5 (approximation fails)")
+
+# Case 2: np > 5 and n(1-p) > 5 -> approximation is GOOD
+compare_normal_approx(400, 0.05, "Case 2: np = 20, n(1-p) = 380 (approximation works)")
+
+plt.show()
+
+```
+
+![](https://louis.pressbooks.pub/app/uploads/sites/67/2019/07/5.14-1024x309.png)

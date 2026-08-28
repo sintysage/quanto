@@ -1,0 +1,511 @@
+---
+title: "Finite Population Correction"
+description: >-
+  Calculating the probability that between 15 and 25 customers exceed their
+  credit limit when sampling 400 orders from a finite population of 3,500, using
+  the Finite Population Correction (FPC) factor and normal approximation.
+image: preview.png
+categories: [Tutorial, Stats, Task]
+---
+
+## Task
+
+> If the probability of a customer exceeding their credit limit is 0.05, and we
+> randomly select 400 orders from a population of 3,500 orders, what is the
+> probability that between 15 and 25 customers will exceed their credit limit?
+> Use the Finite Population Correction Factor.
+
+## 1. Making variables
+
+::: {.panel-tabset}
+## Math
+
+> If the probability of a customer exceeding their credit limit is [0.05]{.y},
+> and we randomly select [400]{.g} orders from a population of [3,500]{.b}
+> orders, what is the probability that between 15 and 25 customers will exceed
+> their credit limit? Use the Finite Population Correction Factor.
+
+- Population size: [N = 3500]{.b}
+- Sample size: [n = 400]{.g}
+- Probability of "success" (exceeding credit limit): [p = 0.05]{.y}
+
+Because we are sampling **without replacement** from a finite population, and
+
+$$
+  \frac{n}{N} = \frac{400}{3500} \approx 0.114 > 0.05,
+$$
+
+we should use the [Finite Population Correction Factor
+(FPC)](https://share.google/aimode/pD9HMArupLm0LuR9i).
+
+## Code
+
+```{python}
+#| label: imports
+
+# Just libraries to work with :)
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from scipy.stats import binom, hypergeom, norm
+import seaborn as sns
+sns.set_theme(style="whitegrid")
+
+```
+
+```{python}
+#| label: rrr
+
+N = 3500
+n = 400
+p = 0.05
+K = int(round(p * N))
+
+# Build a tidy DataFrame of the given parameters
+df = pd.DataFrame(
+    {
+        "Parameter": [
+            "Population size N",
+            "Sample size n",
+            "Success probability p",
+            "Population successes K",
+        ],
+        "Variable": ["N", "n", "p", "K"],
+        "Value": [N, n, p, K],
+    }
+)
+df
+```
+:::
+
+::: {.callout-note}
+This is just an example. Params are different.
+:::
+
+{{< embed fpc_function.qmd >}}
+
+## 2. Check whether the normal approximation is appropriate
+
+::: {.panel-tabset}
+## Math
+
+For a normal approximation to the binomial/hypergeometric distribution, we
+usually require:
+
+$$
+  np \ge 5 \quad \text{and} \quad n(1-p) \ge 5
+$$
+
+Compute:
+
+$$
+  np = 400(0.05) = 20
+$$
+
+$$
+  n(1-p) = 400(0.95) = 380
+$$
+
+Both are well above 5, so the normal approximation is reasonable. Below is an
+example
+
+## Code
+
+```{python}
+fpc_ratio = n / N
+np_check = n * p
+nq_check = n * (1 - p)
+
+df_checks = pd.DataFrame({
+    "Check": [
+        "Sampling fraction n/N",
+        "Expected successes np",
+        "Expected failures n(1-p)"
+    ],
+    "Statistic": ["n/N", "np", "n(1-p)"],
+    "Value": [fpc_ratio, np_check, nq_check],
+    "Decision / Note": [
+        "Use FPC" if fpc_ratio > 0.05 else "No FPC needed",
+        "OK" if np_check >= 5 else "Too small",
+        "OK" if nq_check >= 5 else "Too small"
+    ]
+})
+
+df_checks
+```
+:::
+
+{{< embed normal_approximation.qmd >}}
+
+## 3. Compute the mean
+
+::: {.panel-tabset}
+# Math
+
+The expected number of customers who exceed the limit is:
+
+$$
+  \mu = np
+$$
+
+$$
+  \mu = 400(0.05) = 20
+$$
+
+So we expect about **20 customers** in the sample to exceed the credit limit.
+
+# Code
+
+```{python}
+#| label: step3
+#| echo: true
+
+mu = n * p
+print(f"mu = np = {mu}")
+```
+:::
+
+## 4. Compute the standard deviation with the FPC
+
+::: {.panel-tabset}
+# Math
+
+The variance of the number of successes in a sample from a finite population is:
+
+$$
+  \sigma^2 = np(1-p)\left(\frac{N-n}{N-1}\right)
+$$
+
+The factor $\frac{N-n}{N-1}$ is the **Finite Population Correction Factor**.
+
+First calculate the FPC:
+
+$$
+  \frac{N-n}{N-1} = \frac{3500-400}{3500-1} = \frac{3100}{3499} \approx 0.8860
+$$
+
+Next calculate the usual binomial variance:
+
+$$
+  np(1-p) = 400(0.05)(0.95) = 19
+$$
+
+Now apply the correction:
+
+$$
+  \sigma^2 = 19(0.8860) \approx 16.8334
+$$
+
+Take the square root to get the standard deviation:
+
+$$
+  \sigma = \sqrt{16.8334} \approx 4.10
+$$
+
+# Code
+
+```{python}
+#| label: step4
+
+fpc = (N - n) / (N - 1)
+variance = n * p * (1 - p) * fpc
+sigma = np.sqrt(variance)
+
+results = pd.DataFrame({
+    "Quantity": ["FPC", "Variance (sigma^2)", "Std. deviation (sigma)"],
+    "Formula": ["(N-n)/(N-1)", "np(1-p)*FPC", "sqrt(sigma^2)"],
+    "Value": [round(fpc, 6), round(variance, 4), round(sigma, 4)]
+})
+
+results
+```
+:::
+
+```{python}
+#| label: step10
+#| echo: true
+#| fig-cap: "Population vs Financial Revenue"
+
+# Normal curve with FPC-adjusted sigma
+x = np.linspace(mu - 4 * sigma, mu + 4 * sigma, 500)
+y = norm.pdf(x, mu, sigma)
+
+fig, ax = plt.subplots(figsize=(9, 4.5))
+sns.lineplot(x=x, y=y, color="steelblue", lw=2.5, ax=ax)
+
+# ±1 sigma band
+mask1 = (x >= mu - sigma) & (x <= mu + sigma)
+ax.fill_between(x[mask1], y[mask1], color="seagreen", alpha=0.25,
+                label=f"μ ± 1σ = [{mu - sigma:.1f}, {mu + sigma:.1f}]")
+
+# ±2 sigma lines
+for k, c in [(1, "seagreen"), (2, "darkorange")]:
+    ax.axvline(mu - k * sigma, color=c, ls=":", lw=1.5)
+    ax.axvline(mu + k * sigma, color=c, ls=":", lw=1.5,
+               label=f"μ ± {k}σ = [{mu - k*sigma:.1f}, {mu + k*sigma:.1f}]")
+
+# Mean marker
+ax.axvline(mu, color="crimson", ls="--", lw=2,
+           label=f"Mean μ = {mu:.0f},  σ = {sigma:.2f}")
+
+ax.set_title(f"Normal approximation with FPC:  N({mu:.0f}, {sigma:.2f}²)")
+ax.set_xlabel("Customers exceeding credit limit")
+ax.set_ylabel("Density")
+ax.legend(fontsize=8)
+plt.show()
+```
+
+## 5. Set up the probability and apply continuity correction
+
+::: {.panel-tabset}
+# Math
+
+We want the probability that the number of customers exceeding the limit is
+between 15 and 25:
+
+$$
+  P(15 \le X \le 25)
+$$
+
+Because $X$ is a **discrete** count but we are approximating it with a
+**continuous** normal distribution, we use a **continuity correction** ---
+expand the interval by 0.5 on each side:
+
+$$
+  P(15 \le X \le 25) \approx P(14.5 < X < 25.5)
+$$
+
+# Code
+
+```{python}
+#| label: step5
+#| echo: true
+
+a, b = 15, 25                    # inclusive bounds on the count X
+a_cc, b_cc = a - 0.5, b + 0.5    # continuity-corrected bounds
+
+df_cc = pd.DataFrame({
+    "Bound": ["Lower", "Upper"],
+    "Original": [a, b],
+    "Continuity-corrected": [a_cc, b_cc],
+})
+df_cc
+```
+:::
+
+## 6. Convert to Z-scores
+
+::: {.panel-tabset}
+# Math
+
+The Z-score formula is:
+
+$$
+  Z = \frac{X - \mu}{\sigma}
+$$
+
+**Lower bound:**
+
+$$
+  Z_{\text{lower}} = \frac{14.5 - 20}{4.10} = \frac{-5.5}{4.10} \approx -1.34
+$$
+
+**Upper bound:**
+
+$$
+  Z_{\text{upper}} = \frac{25.5 - 20}{4.10} = \frac{5.5}{4.10} \approx 1.34
+$$
+
+So we need:
+
+$$
+  P(-1.34 < Z < 1.34)
+$$
+
+# Code
+
+```{python}
+#| label: step6
+#| echo: true
+
+z_lower = (a_cc - mu) / sigma
+z_upper = (b_cc - mu) / sigma
+
+df_z = pd.DataFrame({
+    "Bound": ["Lower", "Upper"],
+    "X (corrected)": [a_cc, b_cc],
+    "Z = (X - mu) / sigma": [round(z_lower, 4), round(z_upper, 4)],
+})
+df_z
+```
+:::
+
+## 7. Find the probability from the standard normal table
+
+::: {.panel-tabset}
+# Math
+
+Using the standard normal CDF $\Phi(z)$:
+
+$$
+  P(-1.34 < Z < 1.34) = \Phi(1.34) - \Phi(-1.34)
+$$
+
+By symmetry, $\Phi(-1.34) = 1 - \Phi(1.34)$, so:
+
+$$
+  P(-1.34 < Z < 1.34) = 2\,\Phi(1.34) - 1
+$$
+
+From the standard normal table, $\Phi(1.34) \approx 0.9099$, therefore:
+
+$$
+  P(-1.34 < Z < 1.34) \approx 2(0.9099) - 1 = 0.8198
+$$
+
+# Code
+
+```{python}
+#| label: step7
+#| echo: true
+
+prob_normal = norm.cdf(z_upper) - norm.cdf(z_lower)
+prob_exact = hypergeom.cdf(b, N, K, n) - hypergeom.cdf(a - 1, N, K, n)
+
+df_prob = pd.DataFrame({
+    "Method": ["Normal approx. (FPC + CC)", "Exact hypergeometric"],
+    "Probability": [round(prob_normal, 4), round(prob_exact, 4)],
+    "Percentage": [f"{prob_normal:.2%}", f"{prob_exact:.2%}"],
+})
+df_prob
+```
+:::
+
+```{python}
+#| label: step5-plot
+#| echo: true
+
+sns.set_theme(style="whitegrid")
+
+# Everything computed here, self-contained
+z_lo = (a_cc - mu) / sigma
+z_hi = (b_cc - mu) / sigma
+prob_range = norm.cdf(z_hi) - norm.cdf(z_lo)
+
+x = np.linspace(mu - 4 * sigma, mu + 4 * sigma, 500)
+y = norm.pdf(x, mu, sigma)
+
+fig, ax = plt.subplots(figsize=(9, 4.5))
+sns.lineplot(x=x, y=y, color="steelblue", lw=2.5, ax=ax)
+
+# Shade the continuity-corrected target range
+mask = (x >= a_cc) & (x <= b_cc)
+ax.fill_between(x[mask], y[mask], color="gold", alpha=0.6,
+                label=f"P({a_cc} < X < {b_cc}) ≈ {prob_range:.2f}")
+
+# Bounds with z-score annotations
+for bound, z, side in [(a_cc, z_lo, -1), (b_cc, z_hi, 1)]:
+    ax.axvline(bound, color="darkorange", ls="--", lw=2)
+    ax.annotate(f"X = {bound}\nz = {z:+.2f}",
+                xy=(bound, norm.pdf(bound, mu, sigma)),
+                xytext=(bound + side * 3 * sigma, norm.pdf(bound, mu, sigma) + 0.02),
+                ha="center", fontsize=9, color="darkorange",
+                arrowprops=dict(arrowstyle="->", color="darkorange"))
+
+# Mean marker
+ax.axvline(mu, color="crimson", ls="-.", lw=2, label=f"Mean μ = {mu:.0f}")
+
+ax.set_title(f"Target range on N({mu:.0f}, {sigma:.2f}²):  "
+             f"P({a} ≤ X ≤ {b}) ≈ {prob_range:.2f}")
+ax.set_xlabel("Customers exceeding credit limit")
+ax.set_ylabel("Density")
+ax.legend()
+plt.savefig("preview.png") 
+plt.show()
+```
+
+## 8. Equivalent sample-proportion method (optional check)
+
+::: {.panel-tabset}
+# Math
+
+Work with **sample proportions** instead of counts. The proportion range:
+
+$$
+  \frac{15}{400} = 0.0375 \quad \text{to} \quad \frac{25}{400} = 0.0625
+$$
+
+Standard error of the sample proportion with FPC:
+
+$$
+  SE_{\hat{p}} = \sqrt{\frac{p(1-p)}{n}\left(\frac{N-n}{N-1}\right)}
+  = \sqrt{\frac{0.05(0.95)}{400}(0.8860)} \approx 0.0103
+$$
+
+With continuity correction:
+
+$$
+  \frac{14.5}{400} = 0.03625, \qquad \frac{25.5}{400} = 0.06375
+$$
+
+Z-score:
+
+$$
+  Z = \frac{0.06375 - 0.05}{0.0103} \approx 1.34
+$$
+
+Same result as the count method.
+
+# Code
+
+```{python}
+#| label: step8
+#| echo: true
+
+se_p = np.sqrt(p * (1 - p) / n * fpc)
+z_prop = ((b_cc / n) - p) / se_p
+prob_prop = 2 * norm.cdf(z_prop) - 1
+
+df_prop = pd.DataFrame({
+    "Quantity": ["SE of p-hat", "Z (upper)", "Probability"],
+    "Value": [round(se_p, 5), round(z_prop, 4), round(prob_prop, 4)],
+})
+df_prop
+```
+:::
+
+## 9. Final answer
+
+::: {.panel-tabset}
+# Math
+
+$$
+  P(15 \le X \le 25) \approx 0.8198
+$$
+
+So the probability that between 15 and 25 customers exceed their credit limit is
+approximately:
+
+$$
+  \boxed{0.82 \text{ or } 82\%}
+$$
+
+Without the continuity correction the answer would be $\approx 0.777$
+($77.7\%$); the corrected value $0.82$ is more accurate for a discrete count.
+
+# Code
+
+```{python}
+#| label: step9
+#| echo: true
+
+prob_no_cc = norm.cdf((b - mu) / sigma) - norm.cdf((a - mu) / sigma)
+
+df_final = pd.DataFrame({
+    "Answer": ["With continuity correction", "Without continuity correction"],
+    "Probability": [round(prob_normal, 4), round(prob_no_cc, 4)],
+    "Percentage": [f"{prob_normal:.2%}", f"{prob_no_cc:.2%}"],
+})
+df_final
+```
+:::

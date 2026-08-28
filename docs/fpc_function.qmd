@@ -1,0 +1,66 @@
+---
+title: "FPC function"
+description: >-
+  Visualizing the Finite Population Correction factor and its impact on standard
+  error when sampling without replacement.
+categories: [Tutorial, Stats]
+---
+
+```{python}
+#| label: fpc
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+def _():
+  # --- setup ---
+  N = 1000                      # population size
+  sigma = 50                    # population standard deviation
+  n = np.arange(1, N + 1)       # sample sizes
+  f = n / N                     # sampling fraction
+
+# --- finite population correction factor ---
+  fpc = np.sqrt((N - n) / (N - 1))
+
+# --- standard error of the mean ---
+  se_without = sigma / np.sqrt(n)
+  se_with    = se_without * fpc
+
+# --- plot ---
+  fig, ax = plt.subplots(2, 1, figsize=(8, 9))
+
+# 1. FPC vs sampling fraction
+  ax[0].plot(f, fpc, color='steelblue', lw=2)
+  ax[0].axhline(1, color='gray', linestyle='--', lw=1)
+  ax[0].set_xlabel('Sampling fraction n / N')
+  ax[0].set_ylabel('Finite Population Correction factor')
+  ax[0].set_title(
+      r'FPC$(n) = \sqrt{\dfrac{N-n}{N-1}} = \sqrt{\dfrac{1000-n}{999}}$'
+  )
+  ax[0].set_xlim(0, 1)
+  ax[0].set_ylim(0, 1.1)
+  ax[0].grid(True, alpha=0.3)
+
+# 2. Standard error with vs without FPC
+  ax[1].plot(f, se_without,
+             label=r'Without FPC:  $SE(n) = \dfrac{\sigma}{\sqrt{n}} = \dfrac{50}{\sqrt{n}}$',
+             color='coral', lw=2)
+  ax[1].plot(f, se_with,
+             label=r'With FPC:  $SE(n) = \dfrac{\sigma}{\sqrt{n}}\sqrt{\dfrac{N-n}{N-1}} = \dfrac{50}{\sqrt{n}}\sqrt{\dfrac{1000-n}{999}}$',
+             color='steelblue', lw=2)
+  ax[1].set_xlabel('Sampling fraction n / N')
+  ax[1].set_ylabel('Standard error of the mean')
+  ax[1].set_title(
+      r'$SE(n) = \dfrac{\sigma}{\sqrt{n}}$ vs. '
+      r'$SE(n)\cdot\sqrt{\dfrac{N-n}{N-1}}$   (overstatement without FPC)'
+  )
+  ax[1].legend()
+  ax[1].set_xlim(0, 1)
+  ax[1].grid(True, alpha=0.3)
+
+  plt.tight_layout()
+  plt.show()
+
+_()
+```

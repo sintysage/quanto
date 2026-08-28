@@ -1,0 +1,14 @@
+---
+title: "Quanto"
+listing:
+  contents:
+    - "docs/*.qmd"
+  sort: "order asc" # Sorts tutorials by your custom sequence
+  type: default # Displays title, description, and date
+  categories: true # Enables category filters on the right sidebar
+  sort-ui: true # Allows users to sort tutorials
+  filter-ui: true # Adds a search bar for tutorial titles
+page-layout: full
+---
+
+Welcome to my tutorial series. Browse the guides below to get started.
