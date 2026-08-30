@@ -26,6 +26,7 @@ render_site = "quarto render"
 [tool.pixi.tasks]
 
 [tool.pixi.dependencies]
+boto3 = ">=1.43.81,<2"
 
 [tool.pixi.environments]
 default = { solve-group = "default" }
@@ -52,6 +53,7 @@ ipykernel = ">=7.3.0,<8"
 
 [tool.pixi.feature.versioning.dependencies]
 dvc = ">=3.67.1,<4"
+boto3 = ">=1.43.81,<2"
 
 [tool.pixi.feature.quarto.dependencies]
 quarto = ">=1.9.38,<2"

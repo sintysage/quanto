@@ -9,7 +9,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
-#
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -35,14 +35,22 @@ jobs:
           PIXI_HOME: $HOME/.pixi
 
       - name: Render Quarto
-        run: pixi run render_site
+        run: |
+          cat > _environment <<'EOF'
+          AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION=${{ secrets.AWS_DEFAULT_REGION }}
+          AWS_S3_ENDPOINT_URL=${{ secrets.AWS_S3_ENDPOINT_URL }}
+          BUCKET_NAME=${{ secrets.BUCKET_NAME }}
+          EOF
+          pixi run render_site
         env:
           PIXI_HOME: $HOME/.pixi
 
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "./site" # CHANGE THIS to match your project build folder (e.g., ./build, ./.next)
+          path: "./public"
 
       - name: Deploy to GitHub Pages
         id: deployment

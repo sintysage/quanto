@@ -1,0 +1,12 @@
+{
+  "hash": "03ecf4098aa1a8170f0623accdd5ad23",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "---\ntitle: \"Kullback-Leibler (KL) divergence\"\ndescription: >-\n  Kullback-Leibler (KL) divergence\ncategories: [Stats]\n---\n\n::: {#imports .cell execution_count=1}\n``` {.python .cell-code}\nimport numpy as np\nfrom scipy.stats import entropy\nimport os\n```\n:::\n\n\n::: {#main .cell execution_count=2}\n``` {.python .cell-code}\n# Define two discrete probability distributions (must sum to 1)\n# p = np.array([0.10, 0.40, 0.50])\n# q = np.array([0.80, 0.15, 0.05])\n#\n# # Calculate KL(P || Q)\n# kl_pq = entropy(p, q)\n# print(f\"KL(P || Q): {kl_pq:.4f}\") \n#\n# # Calculate KL(Q || P) - Demonstrating asymmetry\n# kl_qp = entropy(q, p)\n# print(f\"KL(Q || P): {kl_qp:.4f}\")  # Output: 0.9634\n```\n:::\n\n\n---\njupyter:\n  kernelspec:\n    display_name: Python main\n    language: python\n    name: main\n    path: /home/sinty/.local/share/jupyter/kernels/main\n  language_info:\n    codemirror_mode:\n      name: ipython\n      version: 3\n    file_extension: .py\n    mimetype: text/x-python\n    name: python\n    nbconvert_exporter: python\n    pygments_lexer: ipython3\n    version: 3.14.7\n---\n",
+    "supporting": [
+      "kl_divergence_files/figure-ipynb"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

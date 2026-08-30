@@ -5,56 +5,117 @@ description: >-
   approximate a binomial distribution.
 categories: [Tutorial, Stats, Distribution]
 jupyter: main
+# image: "![]({{< var normal_approximation >}})"
 ---
 
-```{python}
-import matplotlib.pyplot as plt
-import numpy as np
-from scipy.stats import binom, hypergeom, norm
+<!-- ![](https://sinty-database.serveblog.net/quanto-site/artifacts/normal_approximation/plot.png){.preview-image} -->
 
-import sys
-print(sys.executable)
-print(sys.version)
+<!-- ![]({{< var normal_approximation >}}) -->
+
+```{python}
+#| echo: false
+#| output: asis
+
+import os
+from IPython.display import Markdown
+
+# 1. Pull the image path safely from the environment file/system
+image_path = os.getenv("MY_TUTORIAL_IMAGE", "images/default.png")
+
+# 2. Inject it into the metadata pipeline before Quarto renders the final page layout
+# print(f"![image]({image_path}){.preview-image}")
 ```
 
 ```{python}
-def compare_normal_approx(n, p, title):
-    """Compare binomial distribution with its normal approximation."""
+#| label: imports_and_helper
+
+import os
+import sys
+
+import matplotlib.pyplot as plt
+import numpy as np
+from PIL import Image
+from scipy.stats import binom, hypergeom, norm
+from IPython.display import Markdown
+
+{{< include default.py >}}
+```
+
+```{python}
+#| label: main
+
+def plot_normal_approx(n, p, ax, color, label_prefix):
+    """Plot binomial and its normal approximation on given axes."""
     mu = n * p
     sigma = np.sqrt(n * p * (1 - p))
 
-    # Exact binomial PMF
     k = np.arange(0, n + 1)
     pmf = binom.pmf(k, n, p)
 
-    # Normal approximation (with continuity correction for the demo below)
-    x = np.linspace(max(0, mu - 4*sigma), mu + 4*sigma, 500)
+    x = np.linspace(max(0, mu - 4 * sigma), mu + 4 * sigma, 500)
     pdf = norm.pdf(x, mu, sigma)
 
-    # Plot
-    plt.figure(figsize=(8, 4))
-    plt.bar(k, pmf, alpha=0.6, label=f"Binomial(n={n}, p={p})")
-    plt.plot(x, pdf, "r-", lw=2, label=f"Normal(μ={mu:.1f}, σ={sigma:.2f})")
-    plt.title(title)
-    plt.xlabel("k")
-    plt.ylabel("Probability")
-    plt.legend()
-    plt.tight_layout()
+    ax.bar(k, pmf, alpha=0.5, width=0.4, color=color[0], label=f"{label_prefix} Binomial")
+    ax.plot(x, pdf, color=color[1], lw=2, label=f"{label_prefix} Normal")
 
-    # Numeric check: P(X <= some value), exact vs normal approx
-    k0 = int(mu)  # P(X <= np)
-    exact = binom.cdf(k0, n, p)
-    approx_no_cc = norm.cdf(k0, mu, sigma)
-    approx_cc = norm.cdf(k0 + 0.5, mu, sigma)  # continuity correction
 
-# Case 1: np < 5  -> approximation is POOR
-compare_normal_approx(20, 0.1, "Case 1: np = 2 < 5 (approximation fails)")
+def fetch_image(path):
+    return Image.open(path)
 
-# Case 2: np > 5 and n(1-p) > 5 -> approximation is GOOD
-compare_normal_approx(400, 0.05, "Case 2: np = 20, n(1-p) = 380 (approximation works)")
 
-plt.show()
+def compare_np_cases(n1, p1, n2, p2, title, plot_name):
+    """Compare normal approximation quality for two different np values on one graph."""
+    import subprocess
 
+    ref_path = "/tmp/ref_image.png"
+    subprocess.run(
+        [
+            "curl",
+            "-s",
+            "-A",
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "-o",
+            ref_path,
+            "https://louis.pressbooks.pub/app/uploads/sites/67/2019/07/5.14-1024x309.png",
+        ],
+        check=True,
+    )
+
+    fig, axes = plt.subplots(3, 1, figsize=(8, 10))
+    ax1, ax2, ax3 = axes
+
+    plot_normal_approx(n1, p1, ax1, ("#1f77b4", "#1f77b4"), f"np={n1*p1:.0f}")
+    plot_normal_approx(n2, p2, ax2, ("#ff7f0e", "#ff7f0e"), f"np={n2*p2:.0f}")
+
+    ax1.set_title(f"np = {n1*p1:.0f} (approximation poorer)")
+    ax1.set_xlabel("k")
+    ax1.set_ylabel("Probability")
+    ax1.legend(fontsize=8)
+
+    ax2.set_title(f"np = {n2*p2:.0f} (approximation better)")
+    ax2.set_xlabel("k")
+    ax2.legend(fontsize=8)
+
+    ref_img = fetch_image(ref_path)
+    ax3.imshow(ref_img)
+    ax3.axis("off")
+    ax3.set_title("Reference: Normal Approximation Conditions", fontsize=9)
+    
+    file_to_save = "/tmp/_.png"
+
+    fig.suptitle(title, fontsize=11)
+    fig.tight_layout()
+    fig.savefig(file_to_save)
+    plt.close(fig)
+
+    obj_ref = helper.upload_file(file_to_save, plot_name)
+    return obj_ref
+
+
+plot_name = "plot.png"
+
+obj_ref = compare_np_cases(20, 0.1, 80, 0.1, "Normal Approximation: np=2 vs np=8", plot_name)
+
+
+Markdown(f"![]({obj_ref}){{.preview-image}}")
 ```
-
-![](https://louis.pressbooks.pub/app/uploads/sites/67/2019/07/5.14-1024x309.png)

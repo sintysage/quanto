@@ -1,8 +1,7 @@
 .git
 _site
 .env
-_freeze
-site
+public
 **/*.png
 
 /.quarto/
@@ -17,4 +16,8 @@ site
 # docs
 docs/*
 !docs/*.qmd
+!docs/*.py
+
+/_*.local
+_environment
 
