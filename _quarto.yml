@@ -1,6 +1,10 @@
 project:
   type: website
   output-dir: public
+  execute-dir: project
+  render:
+    - "docs_to_render/*.qmd"
+    - "index.qmd"
 
 author: Sinty Sage
 website:

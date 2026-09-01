@@ -1,0 +1,12 @@
+{
+  "hash": "2c191914ed1e80ed79d9e2ed9929d0e1",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "---\ntitle: \"Cohen's d Visualization\"\n---\n\n## Imports\n\n::: {#d151676d .cell execution_count=1}\n``` {.python .cell-code}\nimport numpy as np\nimport pandas as pd\nimport seaborn as sns\nimport matplotlib.pyplot as plt\n```\n:::\n\n\n## Setup\n\n::: {#04570c3a .cell execution_count=2}\n``` {.python .cell-code}\n# Set seed for reproducibility\nnp.random.seed(42)\n\n# Study summary statistics\nn1, mean1, sd1 = 1000, 4.0, 1.5\nn2, mean2, sd2 = 1000, 3.5, 1.0\n\n# Simulate data from normal distributions\ngroup1 = np.random.normal(loc=mean1, scale=sd1, size=n1)\ngroup2 = np.random.normal(loc=mean2, scale=sd2, size=n2)\n\n# Combine into a DataFrame for seaborn\ndf = pd.DataFrame({\n    \"value\": np.concatenate([group1, group2]),\n    \"group\": [\"Group 1\"] * n1 + [\"Group 2\"] * n2\n})\n```\n:::\n\n\n## Compute Cohen's d\n\n::: {#50d07658 .cell execution_count=3}\n``` {.python .cell-code}\ns1_sq = np.var(group1, ddof=1)\ns2_sq = np.var(group2, ddof=1)\n\ns_pooled = np.sqrt(((n1 - 1) * s1_sq + (n2 - 1) * s2_sq) / (n1 + n2 - 2))\ncohens_d = (mean1 - mean2) / s_pooled\n\nprint(f\"Pooled SD: {s_pooled:.3f}\")\nprint(f\"Cohen's d: {cohens_d:.3f}\")\n```\n\n::: {.cell-output .cell-output-stdout}\n```\nPooled SD: 1.255\nCohen's d: 0.398\n```\n:::\n:::\n\n\n## Plot distributions\n\n::: {#f3617c56 .cell execution_count=4}\n``` {.python .cell-code}\nplt.figure(figsize=(8, 5))\n\n# Overlapping KDEs\nsns.kdeplot(\n    data=df,\n    x=\"value\",\n    hue=\"group\",\n    fill=True,\n    common_norm=False,\n    alpha=0.35,\n    palette=[\"#1f77b4\", \"#ff7f0e\"]\n)\n\n# Mark the means\nplt.axvline(mean1, color=\"#1f77b4\", linestyle=\"--\", linewidth=1.5, label=f\"Mean 1 = {mean1}\")\nplt.axvline(mean2, color=\"#ff7f0e\", linestyle=\"--\", linewidth=1.5, label=f\"Mean 2 = {mean2}\")\n\nplt.title(f\"Simulated Group Distributions (Cohen's d ≈ {cohens_d:.3f})\")\nplt.xlabel(\"Outcome\")\nplt.ylabel(\"Density\")\nplt.legend(title=\"\")\nplt.tight_layout()\nplt.close()\n```\n:::\n\n\n",
+    "supporting": [
+      "cohens_d_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

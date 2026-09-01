@@ -1,0 +1,11 @@
+---
+title: Ideas for future notes
+description: Here I store ideas for making new notes
+categories:
+  - Idea
+  - List
+image: https://www.godaddy.com/resources/wp-content/uploads/2025/01/business-name-ideas-featured-M2bkRd.tmp_.jpeg?size=3840x0
+---
+
+- Cohen's $d$
+- Paired sample t-test

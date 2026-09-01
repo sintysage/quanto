@@ -51,7 +51,7 @@ from scipy.stats import binom, hypergeom, norm
 import seaborn as sns
 sns.set_theme(style="whitegrid")
 
-{{< include default.py >}}
+{{< include ../py/helper.py >}}
 
 ```
 

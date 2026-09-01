@@ -1,3 +1,17 @@
 ---
 title: Testing
+jupyter: main
+code-file: py/testing.py
 ---
+
+```{python}
+#| code-block: imports
+```
+
+```{python}
+#| code-block: generate_chi_square_samples
+```
+
+```{python}
+#| code-block: plot_hist
+```

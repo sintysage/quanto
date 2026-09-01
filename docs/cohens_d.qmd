@@ -1,0 +1,74 @@
+---
+title: "Cohen's d Visualization"
+---
+
+## Imports
+
+```{python}
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+```
+
+## Setup
+
+```{python}
+# Set seed for reproducibility
+np.random.seed(42)
+
+# Study summary statistics
+n1, mean1, sd1 = 1000, 4.0, 1.5
+n2, mean2, sd2 = 1000, 3.5, 1.0
+
+# Simulate data from normal distributions
+group1 = np.random.normal(loc=mean1, scale=sd1, size=n1)
+group2 = np.random.normal(loc=mean2, scale=sd2, size=n2)
+
+# Combine into a DataFrame for seaborn
+df = pd.DataFrame({
+    "value": np.concatenate([group1, group2]),
+    "group": ["Group 1"] * n1 + ["Group 2"] * n2
+})
+```
+
+## Compute Cohen's d
+
+```{python}
+s1_sq = np.var(group1, ddof=1)
+s2_sq = np.var(group2, ddof=1)
+
+s_pooled = np.sqrt(((n1 - 1) * s1_sq + (n2 - 1) * s2_sq) / (n1 + n2 - 2))
+cohens_d = (mean1 - mean2) / s_pooled
+
+print(f"Pooled SD: {s_pooled:.3f}")
+print(f"Cohen's d: {cohens_d:.3f}")
+```
+
+## Plot distributions
+
+```{python}
+plt.figure(figsize=(8, 5))
+
+# Overlapping KDEs
+sns.kdeplot(
+    data=df,
+    x="value",
+    hue="group",
+    fill=True,
+    common_norm=False,
+    alpha=0.35,
+    palette=["#1f77b4", "#ff7f0e"]
+)
+
+# Mark the means
+plt.axvline(mean1, color="#1f77b4", linestyle="--", linewidth=1.5, label=f"Mean 1 = {mean1}")
+plt.axvline(mean2, color="#ff7f0e", linestyle="--", linewidth=1.5, label=f"Mean 2 = {mean2}")
+
+plt.title(f"Simulated Group Distributions (Cohen's d ≈ {cohens_d:.3f})")
+plt.xlabel("Outcome")
+plt.ylabel("Density")
+plt.legend(title="")
+plt.tight_layout()
+plt.close()
+```

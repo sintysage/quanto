@@ -2,12 +2,13 @@
 title: "Quanto"
 listing:
   contents:
-    - "docs/*.qmd"
-  sort: "order asc" # Sorts tutorials by your custom sequence
-  type: default # Displays title, description, and date
+    - "docs_to_render/*.qmd"
+  sort: "date" # Sorts tutorials by your custom sequence
+  type: grid # Displays title, description, and date
   categories: true # Enables category filters on the right sidebar
   sort-ui: true # Allows users to sort tutorials
   filter-ui: true # Adds a search bar for tutorial titles
+  max-description-length: 100
 page-layout: full
 ---
 

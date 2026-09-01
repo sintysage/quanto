@@ -1,29 +1,38 @@
+import os
+import pathlib
+from dataclasses import dataclass, field
+
+import boto3
+from IPython.display import Markdown
+
+
+@dataclass(frozen=True)
 class Helper:
-    import os
-    import pathlib
-    from typing import Final
-
-    import boto3
-    from IPython.display import Markdown
-
-    BUCKET_NAME: Final = os.getenv("BUCKET_NAME")
-    AWS_S3_ENDPOINT_URL: Final = os.getenv("AWS_S3_ENDPOINT_URL")
-    QUARTO_DOCUMENT_FILE: Final = os.getenv("QUARTO_DOCUMENT_FILE")
-
-    SAVE_DIR = "artifacts/" + pathlib.Path(QUARTO_DOCUMENT_FILE).stem
-
-    s3_client = boto3.client(
-        "s3",
-        endpoint_url=AWS_S3_ENDPOINT_URL,
+    BUCKET_NAME: str = field(
+        default_factory=lambda: str(os.getenv("BUCKET_NAME"))
+    )
+    AWS_S3_ENDPOINT_URL: str = field(
+        default_factory=lambda: str(os.getenv("AWS_S3_ENDPOINT_URL"))
+    )
+    QUARTO_DOCUMENT_FILE: str = field(
+        default_factory=lambda: str(os.getenv("QUARTO_DOCUMENT_FILE"))
     )
 
-    try:
-        response = s3_client.list_objects_v2(
-            Bucket=BUCKET_NAME,
+    def __post_init__(self):
+        object.__setattr__(
+            self,
+            "SAVE_DIR",
+            "artifacts/" + pathlib.Path(self.QUARTO_DOCUMENT_FILE).stem,
         )
-
-    except Exception as e:
-        print(f"Error connecting to S3: {e}")
+        s3_client = boto3.client(
+            "s3",
+            endpoint_url=self.AWS_S3_ENDPOINT_URL,
+        )
+        object.__setattr__(self, "s3_client", s3_client)
+        try:
+            s3_client.list_objects_v2(Bucket=self.BUCKET_NAME)
+        except Exception as e:
+            print(f"Error connecting to S3: {e}")
 
     def upload_file(
         self, file_path: str, obj_name: str, content_type: str = "image/png"
@@ -62,9 +71,9 @@ class Helper:
         obj_ref = self.upload_file(file_path, obj_name, content_type)
 
         if is_preview:
-            return self.Markdown(f"![]({obj_ref}){{.preview-image}}")
+            return Markdown(f"![]({obj_ref}){{.preview-image}}")
         else:
-            return self.Markdown(f"![]({obj_ref})")
+            return Markdown(f"![]({obj_ref})")
 
 
 helper = Helper()

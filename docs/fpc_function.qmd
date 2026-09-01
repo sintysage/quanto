@@ -5,17 +5,15 @@ description: >-
   error when sampling without replacement.
 categories: [Tutorial, Stats]
 jupyter: main
+code-file: py/fpc_function.py
 ---
 
 ```{python}
-#| label: start
+{{< include ../py/helper.py >}}
+```
 
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-
-{{< include default.py >}}
-
+```{python}
+#| code-block: imports
 ```
 
 ```{python}

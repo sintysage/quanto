@@ -5,40 +5,11 @@ description: >-
   approximate a binomial distribution.
 categories: [Tutorial, Stats, Distribution]
 jupyter: main
-# image: "![]({{< var normal_approximation >}})"
+code-file: py/normal_appoximation.py
 ---
 
-<!-- ![](https://sinty-database.serveblog.net/quanto-site/artifacts/normal_approximation/plot.png){.preview-image} -->
-
-<!-- ![]({{< var normal_approximation >}}) -->
-
 ```{python}
-#| echo: false
-#| output: asis
-
-import os
-from IPython.display import Markdown
-
-# 1. Pull the image path safely from the environment file/system
-image_path = os.getenv("MY_TUTORIAL_IMAGE", "images/default.png")
-
-# 2. Inject it into the metadata pipeline before Quarto renders the final page layout
-# print(f"![image]({image_path}){.preview-image}")
-```
-
-```{python}
-#| label: imports_and_helper
-
-import os
-import sys
-
-import matplotlib.pyplot as plt
-import numpy as np
-from PIL import Image
-from scipy.stats import binom, hypergeom, norm
-from IPython.display import Markdown
-
-{{< include default.py >}}
+#| code-block: imports_and_helper
 ```
 
 ```{python}

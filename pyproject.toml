@@ -20,13 +20,13 @@ platforms = ["linux-64"]
 registe_kernel = "python -m ipykernel install --user --name main --display-name \"Python main\""
 
 [tool.pixi.feature.quarto.tasks]
-preview_site = "quarto preview"
-render_site = "quarto render"
+preview_site = "bash ./scripts/factor_docs.sh && quarto preview"
+render_site = "bash ./scripts/factor_docs.sh && quarto render"
 
 [tool.pixi.tasks]
 
 [tool.pixi.dependencies]
-boto3 = ">=1.43.81,<2"
+boto3 = ">=1.43.83,<2"
 
 [tool.pixi.environments]
 default = { solve-group = "default" }
@@ -39,7 +39,7 @@ quarto = { features = ["quarto", "versioning"], solve-group = "default" }
 polars = ">=1.44.1,<2"
 pandas = ">=3.0.5,<4"
 ruff = ">=0.16.5,<0.17"
-ipython = ">=9.16.1,<10"
+ipython = ">=9.17.0,<10"
 matplotlib = ">=3.11.1,<4"
 seaborn = ">=0.13.2,<0.14"
 ipykernel = ">=7.3.0,<8"
@@ -53,14 +53,13 @@ ipykernel = ">=7.3.0,<8"
 
 [tool.pixi.feature.versioning.dependencies]
 dvc = ">=3.67.1,<4"
-boto3 = ">=1.43.81,<2"
+boto3 = ">=1.43.83,<2"
 
 [tool.pixi.feature.quarto.dependencies]
 quarto = ">=1.9.38,<2"
 pyyaml = ">=6.0.3,<7"
 nbformat = ">=5.11.1,<6"
 nbclient = ">=0.11.0,<0.12"
-
 
 [dependency-groups]
 test = ["pytest>=9.1.1,<10"]

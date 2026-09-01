@@ -1,23 +1,19 @@
 .git
 _site
 .env
-public
+/public
 **/*.png
-
+/docs_to_render
 /.quarto/
-**/*.quarto_ipynb
-
-# pixi environments
 .pixi
-# !.pixi/config.toml
-
 .pytest_cache
+/_*.local
+_environment
+**/*.quarto_ipynb
+**/__pycache__
+
 
 # docs
 docs/*
 !docs/*.qmd
 !docs/*.py
-
-/_*.local
-_environment
-
