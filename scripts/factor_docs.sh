@@ -11,13 +11,16 @@ extract_block() {
     ' "$file"
 }
 
-mkdir -p docs_to_render
+
+OUT_DIR="docs_render"
+
+mkdir -p ${OUT_DIR}
 
 for qmd in docs/*.qmd; do
     [[ -f "$qmd" ]] || continue
     [[ "$qmd" == *.release.qmd ]] && continue
 
-    release="docs_to_render/$(basename "${qmd%.qmd}").qmd"
+    release="${OUT_DIR}/$(basename "${qmd%.qmd}").qmd"
 
     frontmatter_state=0
     global_code_file=""
