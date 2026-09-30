@@ -9,3 +9,4 @@ image: https://www.godaddy.com/resources/wp-content/uploads/2025/01/business-nam
 
 - Cohen's $d$
 - Paired sample t-test
+- Chi square test types
